@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Nelogica | Análise de Categoria RA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --primary: #0052cc; --bg: #f4f5f7; --text: #172b4d; --success: #36b37e; --danger: #ff5630; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; }
+        .sidebar { width: 230px; height: 100vh; background: #0747a6; color: white; padding: 25px; position: fixed; z-index: 10; }
+        .main { margin-left: 270px; padding: 40px; width: calc(100% - 310px); }
+        .kpi-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 20px; border-radius: 10px; border-left: 6px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .card h3 { font-size: 11px; color: #6b778c; text-transform: uppercase; margin: 0; }
+        .card p { font-size: 28px; font-weight: bold; margin: 8px 0 0; }
+        .control-panel { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .btn-periodo { background: #ebecf0; border: 1px solid #ddd; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; margin-right: 5px; font-weight: bold; }
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        .modal-content { background: white; margin: 2% auto; padding: 30px; width: 85%; border-radius: 12px; max-height: 85vh; overflow-y: auto; }
+        .close { float: right; font-size: 30px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #0052cc; color: white; padding: 12px; text-align: left; position: sticky; top: 0; font-size: 11px; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .zendesk-link { background: #0052cc; color: white !important; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Nelogica | RA</h2>
+    <p>Status: <span id="statusFile">Aguardando</span></p>
+    <hr style="opacity: 0.2; margin: 20px 0;">
+    <p>Análise por: <strong>Categoria</strong></p>
+    <p style="font-size: 10px; position: absolute; bottom: 20px;">Bob v7.0 | Drill-down Categoria</p>
+</div>
+
+<div class="main">
+    <h1>Controle Reclame Aqui</h1>
+
+    <div class="control-panel">
+        <div style="margin-bottom: 15px;">
+            <strong>1. Carregar CSV:</strong> 
+            <input type="file" id="csvFileInput" accept=".csv" onchange="lerArquivo(this)">
+        </div>
+        <div>
+            <strong>2. Filtros Rápidos:</strong>
+            <button class="btn-periodo" onclick="definirPeriodo('semana')">7 Dias</button>
+            <button class="btn-periodo" onclick="definirPeriodo('mes')">30 Dias</button>
+            <button class="btn-periodo" onclick="definirPeriodo('ano')">Ano 2026</button>
+            <input type="date" id="dataInicio" style="margin-left: 10px; padding: 5px;">
+            <input type="date" id="dataFim" style="padding: 5px;">
+            <button onclick="processarDados()" style="background: #0052cc; color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold;">ATUALIZAR</button>
+        </div>
+    </div>
+
+    <div class="kpi-container">
+        <div class="card" onclick="abrirModal('total')"><h3>Total Casos</h3><p id="kpi-total">0</p></div>
+        <div class="card" style="border-left-color: var(--success)" onclick="abrirModal('resolvidos')"><h3>Resolvidos CC</h3><p id="kpi-resolvidos">0</p></div>
+        <div class="card" id="cardSLA" onclick="abrirModal('fora_sla')"><h3>Dentro SLA (5d)</h3><p id="kpi-sla">0%</p></div>
+        <div class="card" style="border-left-color: #ffab00" onclick="abrirModal('total')"><h3>Média Dias</h3><p id="kpi-tempo">0 dias</p></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="chart-box" style="background:white; padding:20px; border-radius:10px; height: 350px;"><canvas id="chartStatus"></canvas></div>
+        <div class="chart-box" style="background:white; padding:20px; border-radius:10px; height: 350px;"><canvas id="chartCategorias"></canvas></div>
+    </div>
+</div>
+
+<div id="modalTickets" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModal()">&times;</span>
+        <h2 id="modalTitle" style="color:#0052cc;">Detalhes</h2>
+        <table>
+            <thead>
+                <tr><th>Zendesk</th><th>ID RA</th><th>Cliente</th><th>Categoria</th><th>Tempo</th><th>Status</th></tr>
+            </thead>
+            <tbody id="modalBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+let chartStatus, chartCategorias;
+let dadosGerais = [];
+let dadosFiltrados = [];
+let colIdx = {};
+const META_SLA = 5;
+
+function lerArquivo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.trim().split('\n');
+        const sep = lines[0].includes(';') ? ';' : ',';
+        const headers = lines[0].replace(/"/g, '').split(sep).map(h => h.trim().toLowerCase());
+        
+        colIdx = {
+            ticket: headers.findIndex(h => h.includes('zendesk')),
+            ra: headers.findIndex(h => h.includes('reclameaqui')),
+            cliente: headers.findIndex(h => h.includes('cliente')),
+            produto: headers.findIndex(h => h.includes('produto')),
+            categoria: headers.findIndex(h => h.includes('categoria')), // MAPEADO AQUI
+            data: headers.findIndex(h => h.includes('abertura') || h.includes('data')),
+            tempo: headers.findIndex(h => h.includes('tempo')),
+            resolvido: headers.findIndex(h => h.includes('resolvido'))
+        };
+
+        dadosGerais = lines.slice(1).filter(l => l.trim() !== "").map(l => l.replace(/"/g, '').split(sep).map(s => s.trim()));
+        document.getElementById('statusFile').innerText = "Dados OK";
+        processarDados();
+    };
+    reader.readAsText(file, "UTF-8");
+}
+
+function definirPeriodo(tipo) {
+    const hoje = new Date();
+    let inicio = new Date();
+    if (tipo === 'semana') inicio.setDate(hoje.getDate() - 7);
+    else if (tipo === 'mes') inicio.setDate(hoje.getDate() - 30);
+    else if (tipo === 'ano') inicio = new Date(2026, 0, 1);
+    document.getElementById('dataInicio').value = inicio.toISOString().split('T')[0];
+    document.getElementById('dataFim').value = hoje.toISOString().split('T')[0];
+    processarDados();
+}
+
+function formataDataParaNumero(val) {
+    if (!val) return 0;
+    if (!isNaN(val) && val.length > 3 && val.length < 10) {
+        const d = new Date((parseInt(val) - 25569) * 86400 * 1000);
+        return parseInt(d.getFullYear() + (d.getMonth() + 1).toString().padStart(2, '0') + d.getDate().toString().padStart(2, '0'));
+    }
+    if (val.includes('-')) return parseInt(val.replace(/-/g, ''));
+    if (val.includes('/')) {
+        const p = val.split('/');
+        const ano = p[2].length === 2 ? "20" + p[2] : p[2];
+        return parseInt(ano + p[1].padStart(2, '0') + p[0].padStart(2, '0'));
+    }
+    return 0;
+}
+
+function isResolvido(val) {
+    if (!val) return false;
+    const v = val.toUpperCase();
+    return v.includes("TRUE") || v.includes("VERDADEIRO") || v.includes("SIM") || v === "S";
+}
+
+function processarDados() {
+    if (dadosGerais.length === 0) return;
+    const nIni = formataDataParaNumero(document.getElementById('dataInicio').value);
+    const nFim = formataDataParaNumero(document.getElementById('dataFim').value);
+
+    dadosFiltrados = dadosGerais.filter(r => {
+        const d = formataDataParaNumero(r[colIdx.data]);
+        if (d === 0) return true;
+        if (nIni && d < nIni) return false;
+        if (nFim && d > nFim) return false;
+        return true;
+    });
+
+    const tot = dadosFiltrados.length;
+    const res = dadosFiltrados.filter(r => isResolvido(r[colIdx.resolvido])).length;
+    const s = tot > 0 ? ((dadosFiltrados.filter(r => (parseInt(r[colIdx.tempo]) || 0) <= META_SLA).length / tot) * 100).toFixed(1) : 0;
+    const t = dadosFiltrados.map(r => parseInt(r[colIdx.tempo])).filter(n => !isNaN(n));
+    const m = t.length > 0 ? (t.reduce((a,b)=>a+b,0)/t.length).toFixed(1) : 0;
+
+    document.getElementById('kpi-total').innerText = tot;
+    document.getElementById('kpi-resolvidos').innerText = res;
+    document.getElementById('kpi-sla').innerText = s + "%";
+    document.getElementById('kpi-tempo').innerText = m + " dias";
+
+    atualizarGraficos(res, tot);
+}
+
+function abrirModal(tipo, extra = "") {
+    const body = document.getElementById('modalBody');
+    body.innerHTML = "";
+    let lista = (tipo === 'resolvidos') ? dadosFiltrados.filter(r => isResolvido(r[colIdx.resolvido])) :
+                (tipo === 'abertos') ? dadosFiltrados.filter(r => !isResolvido(r[colIdx.resolvido])) :
+                (tipo === 'fora_sla') ? dadosFiltrados.filter(r => (parseInt(r[colIdx.tempo]) || 0) > META_SLA) :
+                (tipo === 'categoria') ? dadosFiltrados.filter(r => r[colIdx.categoria] === extra) : dadosFiltrados;
+
+    lista.sort((a,b) => (parseInt(b[colIdx.tempo]) || 0) - (parseInt(a[colIdx.tempo]) || 0));
+
+    lista.forEach(r => {
+        const id = r[colIdx.ticket] || "0";
+        body.innerHTML += `<tr>
+            <td><a href="https://nelogica.zendesk.com/agent/tickets/${id}" target="_blank" class="zendesk-link">#${id}</a></td>
+            <td>${r[colIdx.ra] || '---'}</td>
+            <td>${r[colIdx.cliente]}</td>
+            <td>${r[colIdx.categoria] || '---'}</td>
+            <td><b style="color:${parseInt(r[colIdx.tempo]) > 5 ? 'red' : 'green'}">${r[colIdx.tempo] || 0}d</b></td>
+            <td>${isResolvido(r[colIdx.resolvido]) ? "✅" : "⏳"}</td>
+        </tr>`;
+    });
+    document.getElementById('modalTickets').style.display = "block";
+}
+
+function fecharModal() { document.getElementById('modalTickets').style.display = "none"; }
+
+function atualizarGraficos(res, tot) {
+    const ctx1 = document.getElementById('chartStatus').getContext('2d');
+    const ctx2 = document.getElementById('chartCategorias').getContext('2d');
+    if(chartStatus) chartStatus.destroy();
+    if(chartCategorias) chartCategorias.destroy();
+
+    chartStatus = new Chart(ctx1, {
+        type: 'doughnut',
+        data: { labels: ['Resolvidos', 'Abertos'], datasets: [{ data: [res, tot-res], backgroundColor: ['#36b37e', '#ff5630'] }] },
+        options: { maintainAspectRatio: false, onClick: (e, activeEls) => { if (activeEls.length > 0) abrirModal(activeEls[0].index === 0 ? 'resolvidos' : 'abertos'); } }
+    });
+
+    const cMap = {};
+    dadosFiltrados.forEach(r => { 
+        const c = r[colIdx.categoria] ? r[colIdx.categoria].trim() : "Sem Categoria"; 
+        cMap[c] = (cMap[c] || 0) + 1; 
+    });
+
+    chartCategorias = new Chart(ctx2, {
+        type: 'bar',
+        data: { labels: Object.keys(cMap), datasets: [{ label: 'Casos por Categoria', data: Object.values(cMap), backgroundColor: '#0052cc' }] },
+        options: { maintainAspectRatio: false, onClick: (e, activeEls) => { if (activeEls.length > 0) abrirModal('categoria', chartCategorias.data.labels[activeEls[0].index]); } }
+    });
+}
+</script>
+</body>
+</html>
