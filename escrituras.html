@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistente de Escrituras</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #c9a84c;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    p.subtitulo {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .chat-box {
+      width: 100%;
+      max-width: 760px;
+      background: #1a1d27;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .mensagens {
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg {
+      padding: 12px 16px;
+      border-radius: 12px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      max-width: 90%;
+    }
+
+    .msg.usuario {
+      background: #2a2d3e;
+      align-self: flex-end;
+      color: #c9a84c;
+    }
+
+    .msg.assistente {
+      background: #1e2235;
+      align-self: flex-start;
+      border-left: 3px solid #c9a84c;
+    }
+
+    .msg.erro {
+      background: #2e1a1a;
+      align-self: flex-start;
+      border-left: 3px solid #e05555;
+      color: #e05555;
+    }
+
+    .msg.carregando {
+      background: #1e2235;
+      align-self: flex-start;
+      color: #666;
+      font-style: italic;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
+    textarea {
+      flex: 1;
+      background: #0f1117;
+      border: 1px solid #2a2d3e;
+      border-radius: 10px;
+      color: #e8e8e8;
+      padding: 12px;
+      font-size: 0.95rem;
+      resize: none;
+      height: 52px;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #c9a84c;
+    }
+
+    button {
+      background: #c9a84c;
+      color: #0f1117;
+      border: none;
+      border-radius: 10px;
+      padding: 0 24px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #e0c06a; }
+    button:disabled { background: #555; cursor: not-allowed; }
+
+    .aviso {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📖 Assistente de Escrituras</h1>
+  <p class="subtitulo">Pergunte sobre a Bíblia, Livro de Mórmon, D&C, Pérola de Grande Valor e discursos de profetas</p>
+
+  <div class="chat-box">
+    <div class="mensagens" id="mensagens">
+      <div class="msg assistente">
+        Olá! Sou seu assistente de escrituras. Faça uma pergunta sobre as escrituras ou discursos de profetas modernos. 🙏
+      </div>
+    </div>
+
+    <div class="input-area">
+      <textarea
+        id="input"
+        placeholder="Ex: O que as escrituras dizem sobre arrependimento?"
+        onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); enviar();}"
+      ></textarea>
+      <button id="btn" onclick="enviar()">Enviar</button>
+    </div>
+    <p class="aviso">Respostas geradas por IA — sempre consulte as escrituras originais</p>
+  </div>
+
+  <script>
+    const API_URL = "https://us-central1-agente-escrituras-rag.cloudfunctions.net/perguntar";
+
+    async function enviar() {
+      const input   = document.getElementById("input");
+      const btn     = document.getElementById("btn");
+      const msgs    = document.getElementById("mensagens");
+      const pergunta = input.value.trim();
+
+      if (!pergunta) return;
+
+      // Mostra pergunta
+      msgs.innerHTML += `<div class="msg usuario">${pergunta}</div>`;
+      msgs.innerHTML += `<div class="msg carregando" id="loading">✨ Buscando nas escrituras...</div>`;
+      msgs.scrollTop = msgs.scrollHeight;
+
+      input.value = "";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pergunta })
+        });
+
+        const data = await res.json();
+        document.getElementById("loading").remove();
+
+        if (data.erro) {
+          msgs.innerHTML += `<div class="msg erro">⚠️ ${data.erro}</div>`;
+        } else {
+          const texto = data.resposta.replace(/\n/g, "<br>");
+          msgs.innerHTML += `<div class="msg assistente">${texto}</div>`;
+        }
+
+      } catch (e) {
+        document.getElementById("loading").remove();
+        msgs.innerHTML += `<div class="msg erro">⚠️ Erro de conexão. Tente novamente.</div>`;
+      }
+
+      btn.disabled = false;
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+  </script>
+
+</body>
+</html>
