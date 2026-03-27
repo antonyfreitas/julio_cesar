@@ -14,33 +14,28 @@
     :root {
       --bg:#0a0a0f; --surface:#111118; --surface2:#16161f; --surface3:#1e1e2a;
       --border:#252535; --border2:#2e2e42;
-      --accent:#c8a96e; --accent2:#7c6fd4;
-      --text:#e8e4dc; --muted:#6b6880; --muted2:#9490a8;
-      --error:#e05c5c; --success:#5ce09a; --warn:#e0a85c;
+      --accent:#c8a96e; --text:#e8e4dc; --muted:#6b6880; --muted2:#9490a8;
+      --error:#e05c5c; --success:#5ce09a;
     }
     html,body { min-height:100vh; background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
     body::before {
-      content:''; position:fixed; inset:0;
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.4;
       background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-      background-size:200px; pointer-events:none; z-index:0; opacity:0.4;
+      background-size:200px;
     }
-    .grid-lines {
-      position:fixed; inset:0;
-      background-image:linear-gradient(rgba(200,169,110,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,169,110,0.03) 1px,transparent 1px);
-      background-size:60px 60px; z-index:0; pointer-events:none;
-    }
+    .grid-lines { position:fixed; inset:0; pointer-events:none; z-index:0; background-image:linear-gradient(rgba(200,169,110,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,169,110,.03) 1px,transparent 1px); background-size:60px 60px; }
 
-    /* ── LOGIN ── */
+    /* LOGIN */
     #login-screen { position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; transition:opacity .5s,visibility .5s; }
     #login-screen.hidden { opacity:0; visibility:hidden; pointer-events:none; }
     .lock-wrap { margin-bottom:2.5rem; position:relative; }
     .lock-wrap svg { width:48px; height:48px; stroke:var(--accent); fill:none; stroke-width:1.5; filter:drop-shadow(0 0 12px rgba(200,169,110,.4)); }
     .lock-ring { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:76px; height:76px; border-radius:50%; border:1px solid rgba(200,169,110,.15); animation:pulse-ring 3s ease-in-out infinite; }
-    @keyframes pulse-ring { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5} 50%{transform:translate(-50%,-50%) scale(1.2);opacity:0} }
+    @keyframes pulse-ring { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}50%{transform:translate(-50%,-50%) scale(1.2);opacity:0} }
     .login-title { font-family:'DM Serif Display',serif; font-size:clamp(1.6rem,4vw,2.4rem); font-weight:400; text-align:center; margin-bottom:.4rem; }
     .login-title em { font-style:italic; color:var(--accent); }
     .login-sub { font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:2.5rem; text-align:center; font-family:'DM Mono',monospace; }
-    .login-card { width:100%; max-width:380px; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:2.2rem 2rem; box-shadow:0 32px 64px rgba(0,0,0,.5),0 0 80px rgba(124,111,212,.06); }
+    .login-card { width:100%; max-width:380px; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:2.2rem 2rem; box-shadow:0 32px 64px rgba(0,0,0,.5); }
     .google-btn { width:100%; display:flex; align-items:center; justify-content:center; gap:12px; padding:.9rem 1.2rem; background:#fff; border:none; border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:.9rem; font-weight:500; color:#1f1f1f; box-shadow:0 2px 12px rgba(0,0,0,.4); transition:transform .15s,box-shadow .2s; }
     .google-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.5); }
     .google-btn svg { width:20px; height:20px; flex-shrink:0; }
@@ -50,21 +45,21 @@
     .error-banner.visible { display:block; }
     .card-footer { margin-top:1.6rem; text-align:center; font-size:.64rem; letter-spacing:.1em; color:var(--muted); font-family:'DM Mono',monospace; }
     .card-footer span { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--success); margin-right:6px; vertical-align:middle; box-shadow:0 0 6px var(--success); animation:blink 2s ease-in-out infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
 
-    /* ── APP ── */
+    /* APP */
     #app { display:none; position:relative; z-index:1; min-height:100vh; flex-direction:column; }
     #app.visible { display:flex; animation:fadein .5s ease both; }
-    @keyframes fadein { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadein { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
 
-    .topbar { position:sticky; top:0; z-index:20; background:rgba(10,10,15,.88); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); padding:0 1.5rem; height:60px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .topbar { position:sticky; top:0; z-index:20; background:rgba(10,10,15,.9); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); padding:0 1.5rem; height:60px; display:flex; align-items:center; justify-content:space-between; }
     .topbar-left { display:flex; align-items:center; gap:10px; }
     .site-name { font-family:'DM Serif Display',serif; font-size:1.15rem; color:var(--accent); }
     .site-badge { font-family:'DM Mono',monospace; font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); border:1px solid var(--border2); border-radius:4px; padding:2px 7px; }
     .topbar-right { display:flex; align-items:center; gap:10px; }
     .user-chip { display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:40px; padding:4px 12px 4px 5px; }
     .user-avatar { width:30px; height:30px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); }
-    .user-name { font-size:.8rem; font-weight:500; color:var(--text); max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .user-name { font-size:.8rem; font-weight:500; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .logout-btn { display:flex; align-items:center; gap:5px; background:none; border:1px solid var(--border); border-radius:7px; padding:6px 12px; color:var(--muted); cursor:pointer; font-family:'DM Sans',sans-serif; font-size:.76rem; transition:color .2s,border-color .2s; }
     .logout-btn:hover { color:var(--error); border-color:rgba(224,92,92,.5); }
     .logout-btn svg { width:14px; height:14px; }
@@ -73,8 +68,7 @@
 
     /* Sidebar */
     .sidebar { width:220px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); padding:1.4rem .8rem; display:flex; flex-direction:column; gap:4px; overflow-y:auto; }
-    .sidebar-label { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); padding:0 .5rem; margin-bottom:4px; margin-top:.5rem; }
-    .sidebar-label:first-child { margin-top:0; }
+    .sidebar-label { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); padding:0 .5rem; margin-bottom:4px; }
     .cat-btn { width:100%; display:flex; align-items:center; gap:10px; padding:.6rem .8rem; border:none; background:none; border-radius:8px; cursor:pointer; color:var(--muted2); font-family:'DM Sans',sans-serif; font-size:.84rem; text-align:left; transition:background .2s,color .2s; position:relative; }
     .cat-btn:hover { background:var(--surface3); color:var(--text); }
     .cat-btn.active { background:rgba(200,169,110,.1); color:var(--accent); }
@@ -84,19 +78,19 @@
     .cat-count { font-family:'DM Mono',monospace; font-size:.65rem; background:var(--surface3); border:1px solid var(--border); border-radius:10px; padding:1px 6px; color:var(--muted); }
     .cat-btn.active .cat-count { background:rgba(200,169,110,.15); border-color:rgba(200,169,110,.2); color:var(--accent); }
 
-    /* Main area */
+    /* Main */
     .main-area { flex:1; overflow-y:auto; padding:1.8rem; display:flex; flex-direction:column; gap:1.5rem; }
-    .cat-header { display:flex; align-items:center; justify-content:space-between; }
+    .cat-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
     .cat-title { display:flex; align-items:center; gap:10px; }
     .cat-title-icon { font-size:1.4rem; }
     .cat-title-text { font-family:'DM Serif Display',serif; font-size:1.4rem; font-weight:400; }
     .cat-title-count { font-family:'DM Mono',monospace; font-size:.7rem; color:var(--muted); background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:2px 8px; }
-
     .upload-btn-header { display:flex; align-items:center; gap:6px; padding:.55rem 1.1rem; background:linear-gradient(135deg,var(--accent),#b8904a); border:none; border-radius:8px; color:#0a0a0f; font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:600; cursor:pointer; transition:opacity .2s,transform .15s; box-shadow:0 4px 16px rgba(200,169,110,.2); }
     .upload-btn-header:hover { opacity:.9; transform:translateY(-1px); }
     .upload-btn-header svg { width:15px; height:15px; }
 
-    .drop-zone { border:2px dashed var(--border2); border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:border-color .2s,background .2s; background:rgba(255,255,255,.01); }
+    /* Drop zone */
+    .drop-zone { border:2px dashed var(--border2); border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:border-color .2s,background .2s; }
     .drop-zone:hover,.drop-zone.drag-over { border-color:var(--accent); background:rgba(200,169,110,.04); }
     .drop-zone input { display:none; }
     .drop-icon { font-size:2rem; margin-bottom:.6rem; opacity:.6; }
@@ -104,39 +98,44 @@
     .drop-text strong { color:var(--accent); }
     .drop-hint { font-size:.7rem; color:var(--muted); font-family:'DM Mono',monospace; }
 
+    /* Upload queue */
     .upload-queue { display:flex; flex-direction:column; gap:8px; }
     .upload-item { display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:.7rem 1rem; }
     .upload-item-name { flex:1; font-size:.82rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .upload-item-status { font-size:.7rem; font-family:'DM Mono',monospace; }
-    .upload-item-status.uploading { color:var(--accent); }
-    .upload-item-status.done { color:var(--success); }
-    .upload-item-status.error { color:var(--error); }
+    .status-uploading { color:var(--accent); }
+    .status-done      { color:var(--success); }
+    .status-error     { color:var(--error); }
     .spinner { width:14px; height:14px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
     @keyframes spin { to{transform:rotate(360deg)} }
 
     /* File grid */
     .file-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
-    .file-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:10px; transition:border-color .2s,transform .15s,box-shadow .2s; position:relative; overflow:hidden; }
-    .file-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(200,169,110,.03) 0%,transparent 60%); opacity:0; transition:opacity .2s; }
+    .file-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:10px; transition:border-color .2s,transform .15s,box-shadow .2s; }
     .file-card:hover { border-color:var(--border2); transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.25); }
-    .file-card:hover::before { opacity:1; }
     .file-card-top { display:flex; align-items:flex-start; justify-content:space-between; }
     .file-type-icon { width:40px; height:40px; border-radius:8px; background:rgba(200,169,110,.08); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
-    .file-delete-btn { background:none; border:none; cursor:pointer; color:var(--muted); padding:2px; border-radius:4px; line-height:0; transition:color .2s,background .2s; }
-    .file-delete-btn:hover { color:var(--error); background:rgba(224,92,92,.1); }
-    .file-delete-btn svg { width:14px; height:14px; }
+    .btn-delete { background:none; border:none; cursor:pointer; color:var(--muted); padding:4px; border-radius:4px; line-height:0; transition:color .2s,background .2s; }
+    .btn-delete:hover { color:var(--error); background:rgba(224,92,92,.1); }
+    .btn-delete svg { width:14px; height:14px; pointer-events:none; }
     .file-name { font-size:.82rem; font-weight:500; word-break:break-word; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .file-meta { font-size:.68rem; color:var(--muted); font-family:'DM Mono',monospace; }
     .file-actions { display:flex; gap:6px; }
-    .file-btn { flex:1; display:flex; align-items:center; justify-content:center; gap:4px; padding:.4rem; border:1px solid var(--border2); border-radius:6px; background:none; color:var(--muted2); font-family:'DM Sans',sans-serif; font-size:.72rem; cursor:pointer; text-decoration:none; transition:color .2s,border-color .2s,background .2s; }
-    .file-btn:hover { color:var(--accent); border-color:rgba(200,169,110,.4); background:rgba(200,169,110,.05); }
-    .file-btn svg { width:11px; height:11px; }
+    .btn-open, .btn-download {
+      flex:1; display:flex; align-items:center; justify-content:center; gap:4px;
+      padding:.45rem; border:1px solid var(--border2); border-radius:6px;
+      background:none; color:var(--muted2); font-family:'DM Sans',sans-serif; font-size:.72rem;
+      cursor:pointer; transition:color .2s,border-color .2s,background .2s;
+      text-decoration:none;
+    }
+    .btn-open:hover, .btn-download:hover { color:var(--accent); border-color:rgba(200,169,110,.4); background:rgba(200,169,110,.05); }
+    .btn-open svg, .btn-download svg { width:11px; height:11px; pointer-events:none; }
 
-    /* Loading / empty */
+    /* States */
     .loading-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 2rem; gap:1rem; }
-    .loading-state .big-spinner { width:32px; height:32px; border:3px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
+    .big-spinner { width:32px; height:32px; border:3px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
     .loading-state p { font-size:.78rem; color:var(--muted); font-family:'DM Mono',monospace; }
-    .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 2rem; gap:.6rem; text-align:center; }
+    .empty-state { display:flex; flex-direction:column; align-items:center; padding:4rem 2rem; gap:.6rem; text-align:center; }
     .empty-icon { font-size:2.5rem; opacity:.4; }
     .empty-title { font-size:.88rem; color:var(--muted2); }
     .empty-sub { font-size:.72rem; color:var(--muted); font-family:'DM Mono',monospace; }
@@ -150,20 +149,19 @@
     .modal-body { font-size:.82rem; color:var(--muted2); line-height:1.6; margin-bottom:1.5rem; }
     .modal-body strong { color:var(--text); }
     .modal-actions { display:flex; gap:10px; justify-content:flex-end; }
-    .btn-cancel { padding:.6rem 1.2rem; background:none; border:1px solid var(--border2); border-radius:8px; color:var(--muted2); cursor:pointer; font-family:'DM Sans',sans-serif; font-size:.82rem; transition:color .2s; }
-    .btn-cancel:hover { color:var(--text); }
-    .btn-delete { padding:.6rem 1.2rem; background:rgba(224,92,92,.15); border:1px solid rgba(224,92,92,.4); border-radius:8px; color:var(--error); cursor:pointer; font-family:'DM Sans',sans-serif; font-size:.82rem; transition:background .2s; }
-    .btn-delete:hover { background:rgba(224,92,92,.25); }
+    .btn-cancel { padding:.6rem 1.2rem; background:none; border:1px solid var(--border2); border-radius:8px; color:var(--muted2); cursor:pointer; font-family:'DM Sans',sans-serif; font-size:.82rem; }
+    .btn-confirm-delete { padding:.6rem 1.2rem; background:rgba(224,92,92,.15); border:1px solid rgba(224,92,92,.4); border-radius:8px; color:var(--error); cursor:pointer; font-family:'DM Sans',sans-serif; font-size:.82rem; transition:background .2s; }
+    .btn-confirm-delete:hover { background:rgba(224,92,92,.25); }
 
     /* Toast */
     .toast-container { position:fixed; bottom:1.5rem; right:1.5rem; z-index:200; display:flex; flex-direction:column; gap:8px; }
-    .toast { display:flex; align-items:center; gap:10px; padding:.75rem 1.1rem; border-radius:10px; font-size:.82rem; min-width:240px; animation:toast-in .3s ease both; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+    .toast { padding:.75rem 1.1rem; border-radius:10px; font-size:.82rem; min-width:240px; animation:t-in .3s ease both; box-shadow:0 8px 24px rgba(0,0,0,.4); }
     .toast.success { background:rgba(10,10,15,.95); border:1px solid rgba(92,224,154,.3); color:var(--success); }
     .toast.error   { background:rgba(10,10,15,.95); border:1px solid rgba(224,92,92,.3); color:var(--error); }
     .toast.info    { background:rgba(10,10,15,.95); border:1px solid rgba(200,169,110,.3); color:var(--accent); }
-    .toast.out { animation:toast-out .3s ease both; }
-    @keyframes toast-in  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes toast-out { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(8px)} }
+    .toast.out { animation:t-out .3s ease both; }
+    @keyframes t-in  { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+    @keyframes t-out { from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(8px)} }
 
     @media(max-width:640px) {
       .sidebar { width:60px; }
@@ -217,7 +215,6 @@
       </button>
     </div>
   </header>
-
   <div class="app-body">
     <nav class="sidebar" id="sidebar"></nav>
     <div class="main-area" id="main-area"></div>
@@ -229,10 +226,10 @@
   <div class="modal">
     <div class="modal-icon">🗑️</div>
     <div class="modal-title">Deletar arquivo</div>
-    <p class="modal-body">Tem certeza que deseja deletar <strong id="delete-filename"></strong>? Esta ação não pode ser desfeita.</p>
+    <p class="modal-body">Tem certeza que deseja deletar <strong id="delete-filename"></strong>?<br>Esta ação não pode ser desfeita.</p>
     <div class="modal-actions">
       <button class="btn-cancel" id="modal-cancel">Cancelar</button>
-      <button class="btn-delete" id="modal-confirm">Deletar</button>
+      <button class="btn-confirm-delete" id="modal-confirm">Deletar</button>
     </div>
   </div>
 </div>
@@ -241,19 +238,12 @@
 
 <script>
 // ═══════════════════════════════════════════════════
-// ⚙️  CONFIGURAÇÕES — edite apenas este bloco
+// ⚙️  CONFIGURAÇÕES
 // ═══════════════════════════════════════════════════
 const CONFIG = {
-  googleClientId: "701242653990-vp3kksugmm36sdorrsmdqva222193gfj.apps.googleusercontent.com",
-
-  allowedEmails: [
-    "antonyquinh@gmail.com",
-    // "outro@gmail.com",
-  ],
-
-  apiEndpoint: "/.netlify/functions/github",
-
-  // Categorias → pastas no repositório
+  googleClientId: "SEU_CLIENT_ID_AQUI",
+  allowedEmails:  ["seuemail@gmail.com"],
+  api:            "/.netlify/functions/github",
   categories: [
     { id:"docs",    name:"Documentos", path:"conteudo/docs",    icon:"📄" },
     { id:"videos",  name:"Vídeos",     path:"conteudo/videos",  icon:"🎬" },
@@ -264,57 +254,52 @@ const CONFIG = {
 };
 // ═══════════════════════════════════════════════════
 
-const state = {
-  user: null, currentCat: null,
-  files: [], fileCounts: {},
-  loading: false,
-  deleteTarget: null,
-  uploadQueue: [],
-};
+// ── State ──
+const S = { user:null, cat:null, files:[], loading:false, deleteTarget:null, queue:[] };
 
-// DOM
-const loginScreen    = document.getElementById("login-screen");
-const app            = document.getElementById("app");
-const errorBanner    = document.getElementById("error-banner");
-const sidebar        = document.getElementById("sidebar");
-const mainArea       = document.getElementById("main-area");
-const deleteModal    = document.getElementById("delete-modal");
-const deleteFilename = document.getElementById("delete-filename");
-const toastContainer = document.getElementById("toast-container");
+// ── DOM ──
+const $loginScreen   = document.getElementById("login-screen");
+const $app           = document.getElementById("app");
+const $errorBanner   = document.getElementById("error-banner");
+const $sidebar       = document.getElementById("sidebar");
+const $main          = document.getElementById("main-area");
+const $deleteModal   = document.getElementById("delete-modal");
+const $deleteFilename= document.getElementById("delete-filename");
+const $toasts        = document.getElementById("toast-container");
 
-// Sessão salva
-const saved = sessionStorage.getItem("pvt_user");
-if (saved) initApp(JSON.parse(saved));
+// ── Auth ──
+const savedUser = sessionStorage.getItem("pvt_user");
+if (savedUser) initApp(JSON.parse(savedUser));
 
 window.addEventListener("load", () => {
   if (!window.google) return;
-  google.accounts.id.initialize({ client_id: CONFIG.googleClientId, callback: handleCredential });
+  google.accounts.id.initialize({ client_id: CONFIG.googleClientId, callback: onGoogleLogin });
 });
 
 document.getElementById("google-login-btn").addEventListener("click", () => {
   if (!window.google) { toast("Aguarde e tente novamente.", "error"); return; }
-  google.accounts.id.initialize({ client_id: CONFIG.googleClientId, callback: handleCredential });
+  google.accounts.id.initialize({ client_id: CONFIG.googleClientId, callback: onGoogleLogin });
   google.accounts.id.prompt();
 });
 
-function handleCredential(response) {
-  const payload = parseJwt(response.credential);
-  if (!CONFIG.allowedEmails.includes(payload.email)) {
-    errorBanner.classList.add("visible"); return;
+function onGoogleLogin(response) {
+  const p = parseJwt(response.credential);
+  if (!CONFIG.allowedEmails.includes(p.email)) {
+    $errorBanner.classList.add("visible"); return;
   }
-  const user = { name: payload.given_name || payload.name, email: payload.email, picture: payload.picture };
+  const user = { name: p.given_name || p.name, email: p.email, picture: p.picture };
   sessionStorage.setItem("pvt_user", JSON.stringify(user));
   initApp(user);
 }
 
 function initApp(user) {
-  state.user = user;
+  S.user = user;
   document.getElementById("topbar-avatar").src = user.picture || "";
   document.getElementById("topbar-name").textContent = user.name;
-  loginScreen.classList.add("hidden");
-  app.classList.add("visible");
+  $loginScreen.classList.add("hidden");
+  $app.classList.add("visible");
   buildSidebar();
-  selectCategory(CONFIG.categories[0]);
+  selectCat(CONFIG.categories[0]);
 }
 
 document.getElementById("logout-btn").addEventListener("click", () => {
@@ -323,79 +308,163 @@ document.getElementById("logout-btn").addEventListener("click", () => {
   location.reload();
 });
 
-// ── Sidebar ──────────────────────────────────────────
+// ── Event delegation no main-area (resolve problema de binding) ──
+$main.addEventListener("click", function(e) {
+  // Botão Abrir
+  const openBtn = e.target.closest(".btn-open");
+  if (openBtn) {
+    e.preventDefault();
+    const path = openBtn.dataset.path;
+    if (path) window.open(`${CONFIG.api}?action=serve&path=${encodeURIComponent(path)}`, "_blank");
+    return;
+  }
+
+  // Botão Baixar
+  const dlBtn = e.target.closest(".btn-download");
+  if (dlBtn) {
+    e.preventDefault();
+    const path = dlBtn.dataset.path;
+    const name = dlBtn.dataset.name;
+    if (path) {
+      const a = document.createElement("a");
+      a.href = `${CONFIG.api}?action=serve&path=${encodeURIComponent(path)}`;
+      a.download = name || "arquivo";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+    return;
+  }
+
+  // Botão Deletar
+  const delBtn = e.target.closest(".btn-delete");
+  if (delBtn) {
+    S.deleteTarget = { name: delBtn.dataset.name, path: delBtn.dataset.path, sha: delBtn.dataset.sha };
+    $deleteFilename.textContent = S.deleteTarget.name;
+    $deleteModal.classList.add("visible");
+    return;
+  }
+
+  // Botão Upload (header)
+  if (e.target.closest("#upload-trigger")) {
+    document.getElementById("file-input")?.click();
+    return;
+  }
+
+  // Drop zone click
+  if (e.target.closest("#drop-zone") && !e.target.closest("#file-input")) {
+    document.getElementById("file-input")?.click();
+    return;
+  }
+});
+
+// Drop zone drag events (delegated via main)
+$main.addEventListener("dragover", e => { e.preventDefault(); $main.querySelector("#drop-zone")?.classList.add("drag-over"); });
+$main.addEventListener("dragleave", () => $main.querySelector("#drop-zone")?.classList.remove("drag-over"));
+$main.addEventListener("drop", e => {
+  e.preventDefault();
+  $main.querySelector("#drop-zone")?.classList.remove("drag-over");
+  handleUpload(Array.from(e.dataTransfer.files));
+});
+
+// File input change (re-attached after each render via MutationObserver pattern)
+$main.addEventListener("change", e => {
+  if (e.target.id === "file-input") handleUpload(Array.from(e.target.files));
+});
+
+// ── Modal ──
+document.getElementById("modal-cancel").addEventListener("click", () => {
+  $deleteModal.classList.remove("visible");
+  S.deleteTarget = null;
+});
+
+document.getElementById("modal-confirm").addEventListener("click", async () => {
+  const t = S.deleteTarget;
+  if (!t) return;
+  $deleteModal.classList.remove("visible");
+  try {
+    // SHA fresco antes de deletar
+    const list = await api("GET", `?action=list&path=${encodeURIComponent(S.cat.path)}`);
+    const fresh = list.find(f => f.path === t.path);
+    await api("DELETE", "", { path: t.path, sha: fresh?.sha || t.sha, message: `Delete: ${t.name}` });
+    toast(`🗑️ ${t.name} deletado.`, "info");
+    loadFiles(S.cat);
+  } catch (err) {
+    toast("Erro ao deletar: " + err.message, "error");
+  }
+  S.deleteTarget = null;
+});
+
+// ── Sidebar ──
 function buildSidebar() {
-  sidebar.innerHTML = `<div class="sidebar-label">Pastas</div>`;
+  $sidebar.innerHTML = `<div class="sidebar-label">Pastas</div>`;
   CONFIG.categories.forEach(cat => {
     const btn = document.createElement("button");
     btn.className = "cat-btn";
     btn.dataset.id = cat.id;
-    btn.innerHTML = `<span class="cat-icon">${cat.icon}</span><span class="cat-label">${cat.name}</span><span class="cat-count" id="count-${cat.id}">—</span>`;
-    btn.addEventListener("click", () => selectCategory(cat));
-    sidebar.appendChild(btn);
+    btn.innerHTML = `<span class="cat-icon">${cat.icon}</span><span class="cat-label">${cat.name}</span><span class="cat-count" id="cnt-${cat.id}">—</span>`;
+    btn.addEventListener("click", () => selectCat(cat));
+    $sidebar.appendChild(btn);
+    loadCount(cat);
   });
-  CONFIG.categories.forEach(cat => loadCount(cat));
 }
 
 async function loadCount(cat) {
   try {
-    const files = await apiFetch("GET", `?action=list&path=${encodeURIComponent(cat.path)}`);
-    state.fileCounts[cat.id] = files.length;
-    const el = document.getElementById(`count-${cat.id}`);
+    const files = await api("GET", `?action=list&path=${encodeURIComponent(cat.path)}`);
+    const el = document.getElementById(`cnt-${cat.id}`);
     if (el) el.textContent = files.length;
   } catch {}
 }
 
-function selectCategory(cat) {
-  state.currentCat = cat;
+function selectCat(cat) {
+  S.cat = cat;
   document.querySelectorAll(".cat-btn").forEach(b => b.classList.toggle("active", b.dataset.id === cat.id));
   loadFiles(cat);
 }
 
-// ── Load files ───────────────────────────────────────
+// ── Load files ──
 async function loadFiles(cat) {
-  state.loading = true; state.uploadQueue = [];
-  renderMain();
+  S.loading = true; S.queue = [];
+  render();
   try {
-    state.files = await apiFetch("GET", `?action=list&path=${encodeURIComponent(cat.path)}`);
-    state.fileCounts[cat.id] = state.files.length;
-    const el = document.getElementById(`count-${cat.id}`);
-    if (el) el.textContent = state.files.length;
+    S.files = await api("GET", `?action=list&path=${encodeURIComponent(cat.path)}`);
+    const el = document.getElementById(`cnt-${cat.id}`);
+    if (el) el.textContent = S.files.length;
   } catch (err) {
-    state.files = [];
+    S.files = [];
     toast("Erro ao carregar: " + err.message, "error");
   }
-  state.loading = false;
-  renderMain();
+  S.loading = false;
+  render();
 }
 
-// ── Render ───────────────────────────────────────────
-function renderMain() {
-  const cat = state.currentCat;
+// ── Render ──
+function render() {
+  const cat = S.cat;
   if (!cat) return;
+  const count = S.loading ? "…" : `${S.files.length} arquivo${S.files.length !== 1 ? "s" : ""}`;
 
-  const count = state.loading ? "…" : `${state.files.length} arquivo${state.files.length !== 1 ? "s" : ""}`;
-
-  mainArea.innerHTML = `
+  let html = `
     <div class="cat-header">
       <div class="cat-title">
         <span class="cat-title-icon">${cat.icon}</span>
         <span class="cat-title-text">${cat.name}</span>
         <span class="cat-title-count">${count}</span>
       </div>
-      ${!state.loading ? `<button class="upload-btn-header" id="upload-trigger-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 5 5 12"/></svg>
-        Fazer upload
-      </button>` : ""}
+      ${!S.loading ? `<button class="upload-btn-header" id="upload-trigger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 5 5 12"/>
+        </svg>Fazer upload</button>` : ""}
     </div>`;
 
-  if (state.loading) {
-    mainArea.innerHTML += `<div class="loading-state"><div class="big-spinner"></div><p>Carregando arquivos…</p></div>`;
+  if (S.loading) {
+    html += `<div class="loading-state"><div class="big-spinner"></div><p>Carregando…</p></div>`;
+    $main.innerHTML = html;
     return;
   }
 
-  // Drop zone
-  mainArea.innerHTML += `
+  html += `
     <div class="drop-zone" id="drop-zone">
       <input type="file" id="file-input" multiple/>
       <div class="drop-icon">📂</div>
@@ -403,150 +472,91 @@ function renderMain() {
       <p class="drop-hint">Qualquer tipo de arquivo é aceito</p>
     </div>`;
 
-  // Fila de upload
-  if (state.uploadQueue.length > 0) {
-    mainArea.innerHTML += `<div class="upload-queue">` +
-      state.uploadQueue.map(item => `
-        <div class="upload-item">
-          ${item.status === "uploading" ? '<div class="spinner"></div>' : ""}
-          <span class="upload-item-name">${item.name}</span>
-          <span class="upload-item-status ${item.status}">
-            ${item.status === "uploading" ? "Enviando…" : item.status === "done" ? "✓ Concluído" : "✕ Erro"}
-          </span>
-        </div>`).join("") + `</div>`;
+  if (S.queue.length > 0) {
+    html += `<div class="upload-queue">` + S.queue.map(q => `
+      <div class="upload-item">
+        ${q.status === "uploading" ? '<div class="spinner"></div>' : ""}
+        <span class="upload-item-name">${q.name}</span>
+        <span class="upload-item-status status-${q.status}">
+          ${q.status === "uploading" ? "Enviando…" : q.status === "done" ? "✓ Concluído" : "✕ Erro"}
+        </span>
+      </div>`).join("") + `</div>`;
   }
 
-  // Grid de arquivos
-  if (state.files.length === 0) {
-    mainArea.innerHTML += `
-      <div class="empty-state">
-        <div class="empty-icon">${cat.icon}</div>
-        <p class="empty-title">Nenhum arquivo em ${cat.name}</p>
-        <p class="empty-sub">Use o botão acima para fazer o primeiro upload</p>
-      </div>`;
+  if (S.files.length === 0) {
+    html += `<div class="empty-state">
+      <div class="empty-icon">${cat.icon}</div>
+      <p class="empty-title">Nenhum arquivo em ${cat.name}</p>
+      <p class="empty-sub">Use o botão acima para fazer o primeiro upload</p>
+    </div>`;
   } else {
-    mainArea.innerHTML += `<div class="file-grid">` +
-      state.files.map(f => {
-        // URL do proxy para abrir o arquivo no browser
-        const serveUrl = `${CONFIG.apiEndpoint}?action=serve&path=${encodeURIComponent(f.path)}`;
-        return `
-        <div class="file-card">
-          <div class="file-card-top">
-            <div class="file-type-icon">${getFileIcon(f.name)}</div>
-            <button class="file-delete-btn"
-              data-path="${f.path}" data-sha="${f.sha}" data-name="${f.name}" title="Deletar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-              </svg>
-            </button>
-          </div>
-          <div>
-            <div class="file-name" title="${f.name}">${f.name}</div>
-            <div class="file-meta">${formatSize(f.size)}</div>
-          </div>
-          <div class="file-actions">
-            <a class="file-btn" href="${serveUrl}" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-              </svg>
-              Abrir
-            </a>
-            <a class="file-btn" href="${serveUrl}" download="${f.name}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              Baixar
-            </a>
-          </div>
-        </div>`;
-      }).join("") + `</div>`;
+    html += `<div class="file-grid">` + S.files.map(f => `
+      <div class="file-card">
+        <div class="file-card-top">
+          <div class="file-type-icon">${fileIcon(f.name)}</div>
+          <button class="btn-delete"
+            data-path="${f.path}"
+            data-sha="${f.sha}"
+            data-name="${escHtml(f.name)}"
+            title="Deletar ${escHtml(f.name)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
+            </svg>
+          </button>
+        </div>
+        <div>
+          <div class="file-name" title="${escHtml(f.name)}">${escHtml(f.name)}</div>
+          <div class="file-meta">${fmtSize(f.size)}</div>
+        </div>
+        <div class="file-actions">
+          <button class="btn-open" data-path="${f.path}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>Abrir
+          </button>
+          <button class="btn-download" data-path="${f.path}" data-name="${escHtml(f.name)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>Baixar
+          </button>
+        </div>
+      </div>`).join("") + `</div>`;
   }
 
-  bindMainEvents();
+  $main.innerHTML = html;
 }
 
-function bindMainEvents() {
-  document.getElementById("upload-trigger-btn")?.addEventListener("click", () => document.getElementById("file-input")?.click());
-
-  const dropZone  = document.getElementById("drop-zone");
-  const fileInput = document.getElementById("file-input");
-  if (!dropZone || !fileInput) return;
-
-  dropZone.addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", () => handleFiles(Array.from(fileInput.files)));
-  dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("drag-over"); });
-  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
-  dropZone.addEventListener("drop", e => {
-    e.preventDefault(); dropZone.classList.remove("drag-over");
-    handleFiles(Array.from(e.dataTransfer.files));
-  });
-
-  document.querySelectorAll(".file-delete-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      state.deleteTarget = { name: btn.dataset.name, path: btn.dataset.path, sha: btn.dataset.sha };
-      deleteFilename.textContent = btn.dataset.name;
-      deleteModal.classList.add("visible");
-    });
-  });
-}
-
-// ── Upload ───────────────────────────────────────────
-async function handleFiles(files) {
+// ── Upload ──
+async function handleUpload(files) {
   if (!files.length) return;
-  const cat = state.currentCat;
-  files.forEach(f => state.uploadQueue.push({ name: f.name, status: "uploading" }));
-  renderMain();
-
+  const cat = S.cat;
+  files.forEach(f => S.queue.push({ name: f.name, status: "uploading" }));
+  render();
   for (const file of files) {
-    const item = state.uploadQueue.find(q => q.name === file.name && q.status === "uploading");
+    const item = S.queue.find(q => q.name === file.name && q.status === "uploading");
     try {
-      const content = await fileToBase64(file);
-      await apiFetch("POST", "", { path: `${cat.path}/${file.name}`, content, message: `Upload: ${file.name}` });
+      const content = await toBase64(file);
+      await api("POST", "", { path:`${cat.path}/${file.name}`, content, message:`Upload: ${file.name}` });
       if (item) item.status = "done";
       toast(`✓ ${file.name} enviado!`, "success");
     } catch (err) {
       if (item) item.status = "error";
-      toast(`Erro ao enviar ${file.name}: ${err.message}`, "error");
+      toast(`Erro: ${file.name} — ${err.message}`, "error");
     }
-    renderMain();
+    render();
   }
   setTimeout(() => loadFiles(cat), 1000);
 }
 
-// ── Delete ───────────────────────────────────────────
-document.getElementById("modal-cancel").addEventListener("click", () => {
-  deleteModal.classList.remove("visible");
-  state.deleteTarget = null;
-});
-
-document.getElementById("modal-confirm").addEventListener("click", async () => {
-  const target = state.deleteTarget;
-  if (!target) return;
-  deleteModal.classList.remove("visible");
-
-  try {
-    // Busca SHA atualizado antes de deletar (evita conflito)
-    const fresh = await apiFetch("GET", `?action=list&path=${encodeURIComponent(state.currentCat.path)}`);
-    const file  = fresh.find(f => f.path === target.path);
-    const sha   = file?.sha || target.sha;
-
-    await apiFetch("DELETE", "", { path: target.path, sha, message: `Delete: ${target.name}` });
-    toast(`🗑️ ${target.name} deletado.`, "info");
-    loadFiles(state.currentCat);
-  } catch (err) {
-    toast("Erro ao deletar: " + err.message, "error");
-  }
-  state.deleteTarget = null;
-});
-
-// ── API ──────────────────────────────────────────────
-async function apiFetch(method, query = "", body = null) {
+// ── API ──
+async function api(method, query = "", body = null) {
   const opts = { method, headers: { "Content-Type": "application/json" } };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(`${CONFIG.apiEndpoint}${query}`, opts);
+  const res = await fetch(`${CONFIG.api}${query}`, opts);
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || `HTTP ${res.status}`);
@@ -554,17 +564,17 @@ async function apiFetch(method, query = "", body = null) {
   return res.json();
 }
 
-// ── Toast ────────────────────────────────────────────
-function toast(message, type = "info") {
+// ── Toast ──
+function toast(msg, type = "info") {
   const el = document.createElement("div");
   el.className = `toast ${type}`;
-  el.textContent = message;
-  toastContainer.appendChild(el);
+  el.textContent = msg;
+  $toasts.appendChild(el);
   setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 400); }, 3500);
 }
 
-// ── Helpers ──────────────────────────────────────────
-function fileToBase64(file) {
+// ── Helpers ──
+function toBase64(file) {
   return new Promise((res, rej) => {
     const r = new FileReader();
     r.onload = () => res(r.result.split(",")[1]);
@@ -573,28 +583,30 @@ function fileToBase64(file) {
   });
 }
 
-function getFileIcon(name) {
+function fileIcon(name) {
   const ext = (name.split(".").pop() || "").toLowerCase();
-  return { pdf:"📄",doc:"📝",docx:"📝",xls:"📊",xlsx:"📊",ppt:"📋",pptx:"📋",
+  return ({pdf:"📄",doc:"📝",docx:"📝",xls:"📊",xlsx:"📊",ppt:"📋",pptx:"📋",
     jpg:"🖼️",jpeg:"🖼️",png:"🖼️",gif:"🖼️",webp:"🖼️",svg:"🎨",
     mp4:"🎬",mov:"🎬",avi:"🎬",mp3:"🎵",wav:"🎵",
     zip:"📦",rar:"📦","7z":"📦",
-    html:"🌐",htm:"🌐",css:"🎨",js:"⚙️",json:"⚙️",
-    txt:"📃",md:"📃" }[ext] || "📎";
+    html:"🌐",htm:"🌐",css:"🎨",js:"⚙️",json:"⚙️",txt:"📃",md:"📃"
+  })[ext] || "📎";
 }
 
-function formatSize(bytes) {
-  if (!bytes) return "";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1048576) return `${(bytes/1024).toFixed(1)} KB`;
-  return `${(bytes/1048576).toFixed(1)} MB`;
+function fmtSize(b) {
+  if (!b) return "";
+  if (b < 1024) return `${b} B`;
+  if (b < 1048576) return `${(b/1024).toFixed(1)} KB`;
+  return `${(b/1048576).toFixed(1)} MB`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
 function parseJwt(token) {
-  const base64 = token.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");
-  return JSON.parse(decodeURIComponent(atob(base64).split("").map(c =>
-    "%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)
-  ).join("")));
+  const b = token.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");
+  return JSON.parse(decodeURIComponent(atob(b).split("").map(c => "%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)).join("")));
 }
 </script>
 </body>
